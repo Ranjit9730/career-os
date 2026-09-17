@@ -1454,6 +1454,7 @@ export const aiProviders = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     provider: text("provider").notNull(),
     model: text("model").notNull(),
+    baseUrl: text("base_url"),
     status: text("status").notNull().default("UNKNOWN"),
     priority: integer("priority").notNull().default(100),
     isFree: boolean("is_free").notNull().default(false),
