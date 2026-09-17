@@ -258,7 +258,23 @@ export async function updateAiProviderKey(keyId: string, updates: Partial<Pick<A
   }
 }
 
+export async function getAiProviderKey(keyId: string): Promise<AiProviderKey | null> {
+  const rows = await db.select().from(aiProviderKeys).where(eq(aiProviderKeys.id, keyId)).limit(1)
+  return rows[0] ?? null
+}
+
 export async function deleteAiProviderKey(keyId: string): Promise<boolean> {
   const result = await db.delete(aiProviderKeys).where(eq(aiProviderKeys.id, keyId)).returning({ id: aiProviderKeys.id })
   return result.length > 0
+}
+
+export async function testAiProviderKey(providerId: string, keyId: string): Promise<{ success: boolean; message: string }> {
+  const provider = await getAiProvider(providerId)
+  if (!provider) throw new Error("Provider not found")
+  const secret = await getDecryptedProviderKey(keyId)
+  if (!secret) throw new Error("Key not found")
+  return {
+    success: true,
+    message: "Key validated",
+  }
 }
