@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 
@@ -7,36 +7,30 @@ import {
   getAiProvider,
   getAiProviderKeys,
   deleteAiProvider,
-  deleteAiProviderKey,
+  updateAiProvider,
 } from "@/lib/ai/provider-manager"
 
-const ProviderIdSchema = z.object({
-  providerId: z.string(),
-})
-
-const KeyStatusSchema = z.object({
-  status: z.enum(["ENABLED", "DISABLED"]),
-})
-
 export async function GET(
-  request: Request,
-  { params }: { params: { providerId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ providerId: string }> }
 ) {
   const user = await requireUser()
-  const provider = await getAiProvider(params.providerId)
+  const { providerId } = await params
+  const provider = await getAiProvider(providerId)
   if (!provider || provider.userId !== user.id) {
     return NextResponse.json({ error: "Provider not found" }, { status: 404 })
   }
-  const keys = await getAiProviderKeys(params.providerId)
+  const keys = await getAiProviderKeys(providerId)
   return NextResponse.json({ provider, keys })
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { providerId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ providerId: string }> }
 ) {
   const user = await requireUser()
-  const provider = await getAiProvider(params.providerId)
+  const { providerId } = await params
+  const provider = await getAiProvider(providerId)
   if (!provider || provider.userId !== user.id) {
     return NextResponse.json({ error: "Provider not found" }, { status: 404 })
   }
@@ -45,22 +39,26 @@ export async function PATCH(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
-  const [updated] = await (await import("drizzle-orm")).update
-    .aiProviders.set({ enabled: parsed.data.enabled, freeOnly: parsed.data.freeOnly })
-    .where(({ id }) => id === params.providerId)
-    .execute()
-  return NextResponse.json({ success: true })
+  const updated = await updateAiProvider(providerId, {
+    enabled: parsed.data.enabled,
+    freeOnly: parsed.data.freeOnly,
+  })
+  if (!updated) {
+    return NextResponse.json({ error: "Provider not found" }, { status: 404 })
+  }
+  return NextResponse.json({ success: true, provider: updated })
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { providerId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ providerId: string }> }
 ) {
   const user = await requireUser()
-  const provider = await getAiProvider(params.providerId)
+  const { providerId } = await params
+  const provider = await getAiProvider(providerId)
   if (!provider || provider.userId !== user.id) {
     return NextResponse.json({ error: "Provider not found" }, { status: 404 })
   }
-  const deleted = await deleteAiProvider(params.providerId)
+  const deleted = await deleteAiProvider(providerId)
   return NextResponse.json({ deleted })
 }
