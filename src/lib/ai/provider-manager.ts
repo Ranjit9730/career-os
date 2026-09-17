@@ -86,15 +86,142 @@ const PROVIDER_MODELS: Record<AiProviderName, string[]> = {
 }
 
 export async function getAiProviders(userId: string): Promise<AiProvider[]> {
-  return await db.select().from(aiProviders).where(eq(aiProviders.userId, userId)).orderBy(asc(aiProviders.priority), asc(aiProviders.createdAt))
+  return await db
+    .select({
+      id: aiProviders.id,
+      userId: aiProviders.userId,
+      provider: aiProviders.provider,
+      model: aiProviders.model,
+      baseUrl: aiProviders.baseUrl,
+      status: aiProviders.status,
+      priority: aiProviders.priority,
+      isFree: aiProviders.isFree,
+      freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
+      contextLimit: aiProviders.contextLimit,
+      capabilities: aiProviders.capabilities,
+      fallbackProviderId: aiProviders.fallbackProviderId,
+      enabled: aiProviders.enabled,
+      freeOnly: aiProviders.freeOnly,
+      requestCount: aiProviders.requestCount,
+      errorCount: aiProviders.errorCount,
+      cooldownUntil: aiProviders.cooldownUntil,
+      dailyUsage: aiProviders.dailyUsage,
+      monthlyUsage: aiProviders.monthlyUsage,
+      lastUsed: aiProviders.lastUsed,
+      createdAt: aiProviders.createdAt,
+      updatedAt: aiProviders.updatedAt,
+    })
+    .from(aiProviders)
+    .where(eq(aiProviders.userId, userId))
+    .orderBy(asc(aiProviders.priority), asc(aiProviders.createdAt))
 }
 
 export async function getAiProvider(providerId: string): Promise<AiProvider | null> {
-  return (await db.select().from(aiProviders).where(eq(aiProviders.id, providerId)).limit(1))[0] ?? null
+  const rows = await db
+    .select({
+      id: aiProviders.id,
+      userId: aiProviders.userId,
+      provider: aiProviders.provider,
+      model: aiProviders.model,
+      baseUrl: aiProviders.baseUrl,
+      status: aiProviders.status,
+      priority: aiProviders.priority,
+      isFree: aiProviders.isFree,
+      freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
+      contextLimit: aiProviders.contextLimit,
+      capabilities: aiProviders.capabilities,
+      fallbackProviderId: aiProviders.fallbackProviderId,
+      enabled: aiProviders.enabled,
+      freeOnly: aiProviders.freeOnly,
+      requestCount: aiProviders.requestCount,
+      errorCount: aiProviders.errorCount,
+      cooldownUntil: aiProviders.cooldownUntil,
+      dailyUsage: aiProviders.dailyUsage,
+      monthlyUsage: aiProviders.monthlyUsage,
+      lastUsed: aiProviders.lastUsed,
+      createdAt: aiProviders.createdAt,
+      updatedAt: aiProviders.updatedAt,
+    })
+    .from(aiProviders)
+    .where(eq(aiProviders.id, providerId))
+    .limit(1)
+  return rows[0] ?? null
 }
 
 export async function getAiProviderKeys(providerId: string): Promise<AiProviderKey[]> {
-  return await db.select().from(aiProviderKeys).where(eq(aiProviderKeys.providerId, providerId)).orderBy(asc(aiProviderKeys.priority), asc(aiProviderKeys.createdAt))
+  return await db
+    .select({
+      id: aiProviderKeys.id,
+      providerId: aiProviderKeys.providerId,
+      encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
+      status: aiProviderKeys.status,
+      health: aiProviderKeys.health,
+      priority: aiProviderKeys.priority,
+      usage: aiProviderKeys.usage,
+      lastUsed: aiProviderKeys.lastUsed,
+      cooldownUntil: aiProviderKeys.cooldownUntil,
+      errorCount: aiProviderKeys.errorCount,
+      keyVersion: aiProviderKeys.keyVersion,
+      createdAt: aiProviderKeys.createdAt,
+      updatedAt: aiProviderKeys.updatedAt,
+    })
+    .from(aiProviderKeys)
+    .where(eq(aiProviderKeys.providerId, providerId))
+    .orderBy(asc(aiProviderKeys.priority), asc(aiProviderKeys.createdAt))
+}
+
+export async function getAiProvider(providerId: string): Promise<AiProvider | null> {
+  const rows = await db
+    .select({
+      id: aiProviders.id,
+      userId: aiProviders.userId,
+      provider: aiProviders.provider,
+      model: aiProviders.model,
+      baseUrl: aiProviders.baseUrl,
+      status: aiProviders.status,
+      priority: aiProviders.priority,
+      isFree: aiProviders.isFree,
+      freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
+      contextLimit: aiProviders.contextLimit,
+      capabilities: aiProviders.capabilities,
+      fallbackProviderId: aiProviders.fallbackProviderId,
+      enabled: aiProviders.enabled,
+      freeOnly: aiProviders.freeOnly,
+      requestCount: aiProviders.requestCount,
+      errorCount: aiProviders.errorCount,
+      cooldownUntil: aiProviders.cooldownUntil,
+      dailyUsage: aiProviders.dailyUsage,
+      monthlyUsage: aiProviders.monthlyUsage,
+      lastUsed: aiProviders.lastUsed,
+      createdAt: aiProviders.createdAt,
+      updatedAt: aiProviders.updatedAt,
+    })
+    .from(aiProviders)
+    .where(eq(aiProviders.id, providerId))
+    .limit(1)
+  return rows[0] ?? null
+}
+
+export async function getAiProviderKeys(providerId: string): Promise<AiProviderKey[]> {
+  return await db
+    .select({
+      id: aiProviderKeys.id,
+      providerId: aiProviderKeys.providerId,
+      encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
+      status: aiProviderKeys.status,
+      health: aiProviderKeys.health,
+      priority: aiProviderKeys.priority,
+      usage: aiProviderKeys.usage,
+      lastUsed: aiProviderKeys.lastUsed,
+      cooldownUntil: aiProviderKeys.cooldownUntil,
+      errorCount: aiProviderKeys.errorCount,
+      keyVersion: aiProviderKeys.keyVersion,
+      createdAt: aiProviderKeys.createdAt,
+      updatedAt: aiProviderKeys.updatedAt,
+    })
+    .from(aiProviderKeys)
+    .where(eq(aiProviderKeys.providerId, providerId))
+    .orderBy(asc(aiProviderKeys.priority), asc(aiProviderKeys.createdAt))
 }
 
 export async function getAiProviderWithKeys(providerId: string): Promise<{ provider: AiProvider; keys: AiProviderKey[] } | null> {

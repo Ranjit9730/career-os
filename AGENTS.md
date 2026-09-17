@@ -38,3 +38,46 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
  
 <!-- END:nextjs-agent-rules -->
+
+## Project Status - Career OS
+
+### Phase 1 — COMPLETE ✅
+**Career DNA, Career Evidence, Master Resume pages + API routes + DAL**
+
+#### Created
+- `src/lib/career/dal.ts` — 5 functions with explicit drizzle column selection
+- `src/app/api/career/dna/route.ts` — GET/POST with `requireUser()`
+- `src/app/api/career/evidence/route.ts` — GET/POST with explicit select
+- `src/app/api/resumes/master/route.ts` — GET/POST with `requireUser()`
+- `src/app/(app)/career-dna/page.tsx` — Career DNA page
+- `src/app/(app)/career-evidence/page.tsx` — Career Evidence page
+- `src/app/(app)/master-resume/page.tsx` — Master Resume page
+- `src/app/(app)/layout.tsx` — Nav links for all 3 pages
+
+#### Fixed (type issues)
+- `db.select().from(table)` → `db.select({...}).from(table)` explicit columns
+- `.returning()` → `.returning({...})` explicit columns
+- `z.record(z.any())` → `z.custom<Record<string, any>>()` for zod v4
+- `string | string[]` filter guard in career-dna page
+- ResumeSection `label` property added
+
+#### Verification
+- `bun run typecheck` — 0 errors ✅
+- `bun run build` — succeeds ✅
+
+### Phase 2 — PENDING
+Decide next steps:
+- Fix provider-manager `db.select()` calls (untyped) in `src/lib/ai/provider-manager.ts`
+- Add authentication / login flow
+- Add more career-related features (job tracking, interviews, etc.)
+- Fix other untyped `db.select()` calls in the codebase
+
+### Current Files
+- 3 API routes under `src/app/api/career/`
+- 3 page components under `src/app/(app)/`
+- DAL under `src/lib/career/dal.ts`
+- Auth: `requireUser()` from `src/lib/auth/require-user`
+- AI: `AIService` in `src/lib/ai/service.ts`
+
+### Next Steps
+Reply with what to work on next, or I'll fix provider-manager explicit column selection and continue with app features.
