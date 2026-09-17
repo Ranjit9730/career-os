@@ -3,7 +3,7 @@
 import "server-only"
 
 import { db } from "@/db/client"
-import { careerDna, careerEvidence, masterResumes, resumeVersions } from "@/db/schema"
+import { careerDna, careerEvidence, masterResumes, resumeVersions, jobs, applications, interviewSessions } from "@/db/schema"
 import { eq, asc } from "drizzle-orm"
 
 export interface CareerDna {
@@ -318,4 +318,16 @@ export async function createOrUpdateMasterResume(
 
     return row as MasterResume
   }
+}
+
+export async function getJobs(userId: string) {
+  return await db.select({ id: jobs.id, title: jobs.title, companyName: jobs.companyName, status: jobs.status, createdAt: jobs.createdAt }).from(jobs).where(eq(jobs.userId, userId))
+}
+
+export async function getApplications(userId: string) {
+  return await db.select({ id: applications.id, jobId: applications.jobId, status: applications.status, interviewStage: applications.interviewStage, createdAt: applications.createdAt }).from(applications).where(eq(applications.userId, userId))
+}
+
+export async function getInterviewSessions(userId: string) {
+  return await db.select({ id: interviewSessions.id, sessionType: interviewSessions.sessionType, status: interviewSessions.status, startedAt: interviewSessions.startedAt }).from(interviewSessions).where(eq(interviewSessions.userId, userId))
 }
