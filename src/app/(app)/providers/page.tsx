@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "sonner"
-import { toast } from "sonner"
 
 const PROVIDERS = [
   { value: "openrouter", label: "OpenRouter", models: ["mistralai/mistral-7b-instruct", "meta-llama/llama-3.1-8b-instant", "deepseek/deepseek-chat-v3"] },
@@ -65,7 +64,6 @@ export default function ProvidersPage() {
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
   const [showAddKey, setSelectedProviderForKey] = useState<Provider | null>(null)
   const [testingKey, setTestingKey] = useState<string | null>(null)
-  const toast = useToast()
 
   const fetchProviders = async () => {
     setLoading(true)
