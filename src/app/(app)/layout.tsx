@@ -15,6 +15,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Link href="/providers">Providers</Link>
           <Link href="/career-dna">Career DNA</Link>
           <Link href="/career-evidence">Evidence</Link>
+          <Link href="/jobs">Jobs</Link>
+          <Link href="/interviews">Interviews</Link>
+          <Link href="/applications">Applications</Link>
           <Link href="/master-resume">Resume</Link>
           <form action="/api/auth/logout" method="POST">
             <Button variant="ghost" size="sm" type="submit">
