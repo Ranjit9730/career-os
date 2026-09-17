@@ -190,8 +190,27 @@ export default function DashboardPage() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Badge>Phase 2: Auth, Dashboard, Career Insights</Badge>
+        <Badge>Phase 2: Auth, Job Tracking, Interviews, Analytics</Badge>
         <Badge variant="outline">Active</Badge>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+        <Link href="/jobs" className="p-4 border rounded-lg hover:bg-muted/50 transition text-center">
+          <div className="font-semibold">3 Active Jobs</div>
+          <div className="text-xs text-muted-foreground">Browse open positions</div>
+        </Link>
+        <Link href="/applications" className="p-4 border rounded-lg hover:bg-muted/50 transition text-center">
+          <div className="font-semibold">2 Applications</div>
+          <div className="text-xs text-muted-foreground">Track status and outcomes</div>
+        </Link>
+        <Link href="/interviews" className="p-4 border rounded-lg hover:bg-muted/50 transition text-center">
+          <div className="font-semibold">2 Upcoming</div>
+          <div className="text-xs text-muted-foreground">Prepare for sessions</div>
+        </Link>
+        <Link href="/providers" className="p-4 border rounded-lg hover:bg-muted/50 transition text-center">
+          <div className="font-semibold">Configure AI</div>
+          <div className="text-xs text-muted-foreground">Manage provider settings</div>
+        </Link>
       </div>
     </main>
   )
