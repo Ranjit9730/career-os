@@ -9,16 +9,19 @@ export async function POST(request: Request) {
   if (!setupCode || body.setupCode !== setupCode) {
     return NextResponse.json({ error: "Invalid setup code" }, { status: 403 })
   }
-  const existing = await db.select().from(users).execute()
+  const existing = await db
+    .select({ id: users.id, email: users.email, displayName: users.displayName })
+    .from(users)
+    .execute()
   if (existing.length > 0) {
     return NextResponse.json({ error: "User exists" }, { status: 409 })
   }
   const hash = await hashPassword(body.password)
-  const user = await db.insert(users).values({
+  const [user] = await db.insert(users).values({
     email: body.email,
     passwordHash: hash,
     displayName: body.displayName ?? body.email,
     setupCompleted: true,
-  }).returning()
-  return NextResponse.json({ user: user[0].id })
+  }).returning({ id: users.id, email: users.email, displayName: users.displayName })
+  return NextResponse.json({ user: user.id })
 }
