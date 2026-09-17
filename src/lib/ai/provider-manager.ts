@@ -170,60 +170,6 @@ export async function getAiProviderKeys(providerId: string): Promise<AiProviderK
     .orderBy(asc(aiProviderKeys.priority), asc(aiProviderKeys.createdAt))
 }
 
-export async function getAiProvider(providerId: string): Promise<AiProvider | null> {
-  const rows = await db
-    .select({
-      id: aiProviders.id,
-      userId: aiProviders.userId,
-      provider: aiProviders.provider,
-      model: aiProviders.model,
-      baseUrl: aiProviders.baseUrl,
-      status: aiProviders.status,
-      priority: aiProviders.priority,
-      isFree: aiProviders.isFree,
-      freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
-      contextLimit: aiProviders.contextLimit,
-      capabilities: aiProviders.capabilities,
-      fallbackProviderId: aiProviders.fallbackProviderId,
-      enabled: aiProviders.enabled,
-      freeOnly: aiProviders.freeOnly,
-      requestCount: aiProviders.requestCount,
-      errorCount: aiProviders.errorCount,
-      cooldownUntil: aiProviders.cooldownUntil,
-      dailyUsage: aiProviders.dailyUsage,
-      monthlyUsage: aiProviders.monthlyUsage,
-      lastUsed: aiProviders.lastUsed,
-      createdAt: aiProviders.createdAt,
-      updatedAt: aiProviders.updatedAt,
-    })
-    .from(aiProviders)
-    .where(eq(aiProviders.id, providerId))
-    .limit(1)
-  return rows[0] ?? null
-}
-
-export async function getAiProviderKeys(providerId: string): Promise<AiProviderKey[]> {
-  return await db
-    .select({
-      id: aiProviderKeys.id,
-      providerId: aiProviderKeys.providerId,
-      encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
-      status: aiProviderKeys.status,
-      health: aiProviderKeys.health,
-      priority: aiProviderKeys.priority,
-      usage: aiProviderKeys.usage,
-      lastUsed: aiProviderKeys.lastUsed,
-      cooldownUntil: aiProviderKeys.cooldownUntil,
-      errorCount: aiProviderKeys.errorCount,
-      keyVersion: aiProviderKeys.keyVersion,
-      createdAt: aiProviderKeys.createdAt,
-      updatedAt: aiProviderKeys.updatedAt,
-    })
-    .from(aiProviderKeys)
-    .where(eq(aiProviderKeys.providerId, providerId))
-    .orderBy(asc(aiProviderKeys.priority), asc(aiProviderKeys.createdAt))
-}
-
 export async function getAiProviderWithKeys(providerId: string): Promise<{ provider: AiProvider; keys: AiProviderKey[] } | null> {
   const provider = await getAiProvider(providerId)
   if (!provider) return null
@@ -265,7 +211,30 @@ export async function createAiProvider(userId: string, input: ProviderFormInput)
       lastUsed: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-    }]).returning() as [AiProvider]
+    }]).returning({
+      id: aiProviders.id,
+      userId: aiProviders.userId,
+      provider: aiProviders.provider,
+      model: aiProviders.model,
+      baseUrl: aiProviders.baseUrl,
+      status: aiProviders.status,
+      priority: aiProviders.priority,
+      isFree: aiProviders.isFree,
+      freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
+      contextLimit: aiProviders.contextLimit,
+      capabilities: aiProviders.capabilities,
+      fallbackProviderId: aiProviders.fallbackProviderId,
+      enabled: aiProviders.enabled,
+      freeOnly: aiProviders.freeOnly,
+      requestCount: aiProviders.requestCount,
+      errorCount: aiProviders.errorCount,
+      cooldownUntil: aiProviders.cooldownUntil,
+      dailyUsage: aiProviders.dailyUsage,
+      monthlyUsage: aiProviders.monthlyUsage,
+      lastUsed: aiProviders.lastUsed,
+      createdAt: aiProviders.createdAt,
+      updatedAt: aiProviders.updatedAt,
+    }) as [AiProvider]
 
   return {
     id: row.id,
@@ -299,7 +268,30 @@ export async function updateAiProvider(providerId: string, updates: Partial<AiPr
   const [row] = await db.update(aiProviders).set({
     ...updates,
     updatedAt: new Date(),
-  }).where(eq(aiProviders.id, providerId)).returning()
+  }).where(eq(aiProviders.id, providerId)).returning({
+    id: aiProviders.id,
+    userId: aiProviders.userId,
+    provider: aiProviders.provider,
+    model: aiProviders.model,
+    baseUrl: aiProviders.baseUrl,
+    status: aiProviders.status,
+    priority: aiProviders.priority,
+    isFree: aiProviders.isFree,
+    freeTierVerifiedAt: aiProviders.freeTierVerifiedAt,
+    contextLimit: aiProviders.contextLimit,
+    capabilities: aiProviders.capabilities,
+    fallbackProviderId: aiProviders.fallbackProviderId,
+    enabled: aiProviders.enabled,
+    freeOnly: aiProviders.freeOnly,
+    requestCount: aiProviders.requestCount,
+    errorCount: aiProviders.errorCount,
+    cooldownUntil: aiProviders.cooldownUntil,
+    dailyUsage: aiProviders.dailyUsage,
+    monthlyUsage: aiProviders.monthlyUsage,
+    lastUsed: aiProviders.lastUsed,
+    createdAt: aiProviders.createdAt,
+    updatedAt: aiProviders.updatedAt,
+  })
   if (!row) return null
   return {
     id: row.id,
@@ -345,7 +337,21 @@ export async function createAiProviderKey(providerId: string, input: ProviderKey
     keyVersion: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
-  }).returning()
+  }).returning({
+    id: aiProviderKeys.id,
+    providerId: aiProviderKeys.providerId,
+    encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
+    status: aiProviderKeys.status,
+    health: aiProviderKeys.health,
+    priority: aiProviderKeys.priority,
+    usage: aiProviderKeys.usage,
+    lastUsed: aiProviderKeys.lastUsed,
+    cooldownUntil: aiProviderKeys.cooldownUntil,
+    errorCount: aiProviderKeys.errorCount,
+    keyVersion: aiProviderKeys.keyVersion,
+    createdAt: aiProviderKeys.createdAt,
+    updatedAt: aiProviderKeys.updatedAt,
+  })
   return {
     id: row.id,
     providerId: row.providerId,
@@ -366,7 +372,21 @@ export async function createAiProviderKey(providerId: string, input: ProviderKey
 export async function updateAiProviderKey(keyId: string, updates: Partial<Pick<AiProviderKey, "status" | "health" | "priority" | "cooldownUntil" | "errorCount" | "keyVersion">>): Promise<AiProviderKey | null> {
   const existing = await db.select({ id: aiProviderKeys.id }).from(aiProviderKeys).where(eq(aiProviderKeys.id, keyId)).limit(1)
   if (!existing[0]) return null
-  const [row] = await db.update(aiProviderKeys).set({ ...updates, updatedAt: new Date() }).where(eq(aiProviderKeys.id, keyId)).returning()
+  const [row] = await db.update(aiProviderKeys).set({ ...updates, updatedAt: new Date() }).where(eq(aiProviderKeys.id, keyId)).returning({
+    id: aiProviderKeys.id,
+    providerId: aiProviderKeys.providerId,
+    encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
+    status: aiProviderKeys.status,
+    health: aiProviderKeys.health,
+    priority: aiProviderKeys.priority,
+    usage: aiProviderKeys.usage,
+    lastUsed: aiProviderKeys.lastUsed,
+    cooldownUntil: aiProviderKeys.cooldownUntil,
+    errorCount: aiProviderKeys.errorCount,
+    keyVersion: aiProviderKeys.keyVersion,
+    createdAt: aiProviderKeys.createdAt,
+    updatedAt: aiProviderKeys.updatedAt,
+  })
   if (!row) return null
   return {
     id: row.id,
@@ -386,7 +406,25 @@ export async function updateAiProviderKey(keyId: string, updates: Partial<Pick<A
 }
 
 export async function getAiProviderKey(keyId: string): Promise<AiProviderKey | null> {
-  const rows = await db.select().from(aiProviderKeys).where(eq(aiProviderKeys.id, keyId)).limit(1)
+  const rows = await db
+    .select({
+      id: aiProviderKeys.id,
+      providerId: aiProviderKeys.providerId,
+      encryptedSecretReference: aiProviderKeys.encryptedSecretReference,
+      status: aiProviderKeys.status,
+      health: aiProviderKeys.health,
+      priority: aiProviderKeys.priority,
+      usage: aiProviderKeys.usage,
+      lastUsed: aiProviderKeys.lastUsed,
+      cooldownUntil: aiProviderKeys.cooldownUntil,
+      errorCount: aiProviderKeys.errorCount,
+      keyVersion: aiProviderKeys.keyVersion,
+      createdAt: aiProviderKeys.createdAt,
+      updatedAt: aiProviderKeys.updatedAt,
+    })
+    .from(aiProviderKeys)
+    .where(eq(aiProviderKeys.id, keyId))
+    .limit(1)
   return rows[0] ?? null
 }
 
