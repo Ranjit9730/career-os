@@ -20,6 +20,7 @@ interface MasterResume {
 
 interface ResumeSection {
   name: string
+  label: string
   items: string[]
 }
 

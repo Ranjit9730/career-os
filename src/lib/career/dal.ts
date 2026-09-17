@@ -57,8 +57,31 @@ export interface MasterResumeFormInput {
 }
 
 export async function getCareerDna(userId: string): Promise<CareerDna | null> {
-  const rows = await db.select().from(careerDna).where(eq(careerDna.userId, userId)).limit(1)
-  return rows.length > 0 ? rows[0] : null
+  const rows = await db
+    .select({
+      id: careerDna.id,
+      userId: careerDna.userId,
+      careerIdentity: careerDna.careerIdentity,
+      coreStrengths: careerDna.coreStrengths,
+      technicalStrengths: careerDna.technicalStrengths,
+      domainStrengths: careerDna.domainStrengths,
+      transferableSkills: careerDna.transferableSkills,
+      evidenceBackedAchievements: careerDna.evidenceBackedAchievements,
+      careerThemes: careerDna.careerThemes,
+      roleFamilies: careerDna.roleFamilies,
+      potentialRoleTransitions: careerDna.potentialRoleTransitions,
+      skillGaps: careerDna.skillGaps,
+      experienceGaps: careerDna.experienceGaps,
+      positioningOptions: careerDna.positioningOptions,
+      sourceContext: careerDna.sourceContext,
+      generatedAt: careerDna.generatedAt,
+      updatedAt: careerDna.updatedAt,
+    })
+    .from(careerDna)
+    .where(eq(careerDna.userId, userId))
+    .limit(1)
+
+  return rows.length > 0 ? (rows[0] as CareerDna) : null
 }
 
 export async function createOrUpdateCareerDna(
@@ -101,28 +124,27 @@ export async function createOrUpdateCareerDna(
         updatedAt: new Date(),
       })
       .where(eq(careerDna.userId, userId))
-      .returning()
+      .returning({
+        id: careerDna.id,
+        userId: careerDna.userId,
+        careerIdentity: careerDna.careerIdentity,
+        coreStrengths: careerDna.coreStrengths,
+        technicalStrengths: careerDna.technicalStrengths,
+        domainStrengths: careerDna.domainStrengths,
+        transferableSkills: careerDna.transferableSkills,
+        evidenceBackedAchievements: careerDna.evidenceBackedAchievements,
+        careerThemes: careerDna.careerThemes,
+        roleFamilies: careerDna.roleFamilies,
+        potentialRoleTransitions: careerDna.potentialRoleTransitions,
+        skillGaps: careerDna.skillGaps,
+        experienceGaps: careerDna.experienceGaps,
+        positioningOptions: careerDna.positioningOptions,
+        sourceContext: careerDna.sourceContext,
+        generatedAt: careerDna.generatedAt,
+        updatedAt: careerDna.updatedAt,
+      })
 
-    const data = row
-    return {
-      id: data.id,
-      userId: data.userId,
-      careerIdentity: data.careerIdentity,
-      coreStrengths: data.coreStrengths,
-      technicalStrengths: data.technicalStrengths,
-      domainStrengths: data.domainStrengths,
-      transferableSkills: data.transferableSkills,
-      evidenceBackedAchievements: data.evidenceBackedAchievements,
-      careerThemes: data.careerThemes,
-      roleFamilies: data.roleFamilies,
-      potentialRoleTransitions: data.potentialRoleTransitions,
-      skillGaps: data.skillGaps,
-      experienceGaps: data.experienceGaps,
-      positioningOptions: data.positioningOptions,
-      sourceContext: data.sourceContext,
-      generatedAt: data.generatedAt,
-      updatedAt: data.updatedAt,
-    }
+    return row as CareerDna
   } else {
     const [row] = await db
       .insert(careerDna)
@@ -144,28 +166,27 @@ export async function createOrUpdateCareerDna(
         generatedAt: new Date(),
         updatedAt: new Date(),
       })
-      .returning()
+      .returning({
+        id: careerDna.id,
+        userId: careerDna.userId,
+        careerIdentity: careerDna.careerIdentity,
+        coreStrengths: careerDna.coreStrengths,
+        technicalStrengths: careerDna.technicalStrengths,
+        domainStrengths: careerDna.domainStrengths,
+        transferableSkills: careerDna.transferableSkills,
+        evidenceBackedAchievements: careerDna.evidenceBackedAchievements,
+        careerThemes: careerDna.careerThemes,
+        roleFamilies: careerDna.roleFamilies,
+        potentialRoleTransitions: careerDna.potentialRoleTransitions,
+        skillGaps: careerDna.skillGaps,
+        experienceGaps: careerDna.experienceGaps,
+        positioningOptions: careerDna.positioningOptions,
+        sourceContext: careerDna.sourceContext,
+        generatedAt: careerDna.generatedAt,
+        updatedAt: careerDna.updatedAt,
+      })
 
-    const data = row
-    return {
-      id: data.id,
-      userId: data.userId,
-      careerIdentity: data.careerIdentity,
-      coreStrengths: data.coreStrengths,
-      technicalStrengths: data.technicalStrengths,
-      domainStrengths: data.domainStrengths,
-      transferableSkills: data.transferableSkills,
-      evidenceBackedAchievements: data.evidenceBackedAchievements,
-      careerThemes: data.careerThemes,
-      roleFamilies: data.roleFamilies,
-      potentialRoleTransitions: data.potentialRoleTransitions,
-      skillGaps: data.skillGaps,
-      experienceGaps: data.experienceGaps,
-      positioningOptions: data.positioningOptions,
-      sourceContext: data.sourceContext,
-      generatedAt: data.generatedAt,
-      updatedAt: data.updatedAt,
-    }
+    return row as CareerDna
   }
 }
 
@@ -189,39 +210,66 @@ export async function createCareerEvidence(
     .values({
       userId,
       claim: input.claim,
-      source: input.source,
+      source: input.source ?? null,
       sourceType: input.sourceType,
       date: input.date ?? null,
-      confidence: input.confidence ?? 0.0000,
+      confidence: String(input.confidence ?? 0.0000),
       verificationStatus: input.verificationStatus ?? "UNKNOWN",
-      relatedRole: input.relatedRole ?? "",
-      relatedSkill: input.relatedSkill ?? "",
-      relatedAchievement: input.relatedAchievement ?? "",
+      relatedRole: input.relatedRole ?? null,
+      relatedSkill: input.relatedSkill ?? null,
+      relatedAchievement: input.relatedAchievement ?? null,
       metadata: input.metadata ?? {},
       createdAt: new Date(),
     })
-    .returning()
+    .returning({
+      id: careerEvidence.id,
+      userId: careerEvidence.userId,
+      claim: careerEvidence.claim,
+      source: careerEvidence.source,
+      sourceType: careerEvidence.sourceType,
+      date: careerEvidence.date,
+      confidence: careerEvidence.confidence,
+      verificationStatus: careerEvidence.verificationStatus,
+      relatedRole: careerEvidence.relatedRole,
+      relatedSkill: careerEvidence.relatedSkill,
+      relatedAchievement: careerEvidence.relatedAchievement,
+      metadata: careerEvidence.metadata,
+      createdAt: careerEvidence.createdAt,
+    })
 
+  const data = row
   return {
-    id: row.id,
-    userId: row.userId,
-    claim: row.claim,
-    source: row.source,
-    sourceType: row.sourceType,
-    date: row.date,
-    confidence: Number(row.confidence),
-    verificationStatus: row.verificationStatus,
-    relatedRole: row.relatedRole,
-    relatedSkill: row.relatedSkill,
-    relatedAchievement: row.relatedAchievement,
-    metadata: row.metadata,
-    createdAt: row.createdAt,
+    id: data.id,
+    userId: data.userId,
+    claim: data.claim,
+    source: data.source ?? "",
+    sourceType: data.sourceType,
+    date: data.date,
+    confidence: Number(data.confidence),
+    verificationStatus: data.verificationStatus,
+    relatedRole: data.relatedRole ?? "",
+    relatedSkill: data.relatedSkill ?? "",
+    relatedAchievement: data.relatedAchievement ?? "",
+    metadata: data.metadata as Record<string, any>,
+    createdAt: data.createdAt,
   }
 }
 
 export async function getMasterResume(userId: string): Promise<MasterResume | null> {
-  const rows = await db.select().from(masterResumes).where(eq(masterResumes.userId, userId)).limit(1)
-  return rows.length > 0 ? rows[0] : null
+  const rows = await db
+    .select({
+      id: masterResumes.id,
+      userId: masterResumes.userId,
+      title: masterResumes.title,
+      content: masterResumes.content,
+      createdAt: masterResumes.createdAt,
+      updatedAt: masterResumes.updatedAt,
+    })
+    .from(masterResumes)
+    .where(eq(masterResumes.userId, userId))
+    .limit(1)
+
+  return rows.length > 0 ? (rows[0] as MasterResume) : null
 }
 
 export async function createOrUpdateMasterResume(
@@ -239,16 +287,16 @@ export async function createOrUpdateMasterResume(
         updatedAt: new Date(),
       })
       .where(eq(masterResumes.userId, userId))
-      .returning()
+      .returning({
+        id: masterResumes.id,
+        userId: masterResumes.userId,
+        title: masterResumes.title,
+        content: masterResumes.content,
+        createdAt: masterResumes.createdAt,
+        updatedAt: masterResumes.updatedAt,
+      })
 
-    return {
-      id: row.id,
-      userId: row.userId,
-      title: row.title,
-      content: row.content,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    }
+    return row as MasterResume
   } else {
     const [row] = await db
       .insert(masterResumes)
@@ -259,39 +307,15 @@ export async function createOrUpdateMasterResume(
         createdAt: new Date(),
         updatedAt: new Date(),
       })
-      .returning()
+      .returning({
+        id: masterResumes.id,
+        userId: masterResumes.userId,
+        title: masterResumes.title,
+        content: masterResumes.content,
+        createdAt: masterResumes.createdAt,
+        updatedAt: masterResumes.updatedAt,
+      })
 
-    return {
-      id: row.id,
-      userId: row.userId,
-      title: row.title,
-      content: row.content,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    }
+    return row as MasterResume
   }
-}
-
-export async function getResumeVersions(
-  userId: string
-): Promise<Array<{
-  id: string
-  versionNumber: number
-  template: string
-  content: Record<string, any>
-  createdAt: Date
-}>> {
-  const rows = await db
-    .select()
-    .from(resumeVersions)
-    .where(eq(resumeVersions.masterResumeId, userId ?? ""))
-    .orderBy(asc(resumeVersions.versionNumber))
-
-  return rows.map((row) => ({
-    id: row.id,
-    versionNumber: row.versionNumber,
-    template: row.template,
-    content: row.content,
-    createdAt: row.createdAt,
-  }))
 }

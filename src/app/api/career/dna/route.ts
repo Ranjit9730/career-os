@@ -17,10 +17,13 @@ const CareerDnaSchema = z.object({
   skillGaps: z.array(z.string()),
   experienceGaps: z.array(z.string()),
   positioningOptions: z.array(z.string()),
-  sourceContext: z.record(z.any()).optional(),
+  sourceContext: z.custom<Record<string, any>>().optional(),
 })
 
-export async function GET() {
+export async function GET(
+  _request: Request,
+  _params: { params: Promise<Record<string, string>> }
+) {
   const user = await requireUser()
   const dna = await getCareerDna(user.id)
   return NextResponse.json(dna)

@@ -6,10 +6,13 @@ import { createOrUpdateMasterResume, getMasterResume } from "@/lib/career/dal"
 
 const MasterResumeSchema = z.object({
   title: z.string().optional(),
-  content: z.record(z.any()).optional(),
+  content: z.custom<Record<string, any>>().optional(),
 })
 
-export async function GET() {
+export async function GET(
+  _request: Request,
+  _params: { params: Promise<Record<string, string>> }
+) {
   const user = await requireUser()
   const resume = await getMasterResume(user.id)
   return NextResponse.json(resume)

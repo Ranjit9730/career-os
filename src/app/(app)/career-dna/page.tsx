@@ -96,7 +96,15 @@ export default function CareerDnaPage() {
   }
 
   const removeArrayItem = (field: keyof CareerDna, index: number) => {
-    setDna(prev => prev ? { ...prev, [field]: prev[field].filter((_, i) => i !== index) } : null)
+    if (field === "careerIdentity") return
+    setDna(prev => {
+      if (!prev) return null
+      const arr = prev[field]
+      if (Array.isArray(arr)) {
+        return { ...prev, [field]: arr.filter((_, i) => i !== index) } as CareerDna
+      }
+      return prev
+    })
   }
 
   const handleInputChange = (field: keyof CareerDna, value: string) => {
