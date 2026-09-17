@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "NODE_OPTIONS=--max-old-space-size=1024 tsc --noEmit"
+    "typecheck": "NODE_OPTIONS=--max-old-space-size=1024 tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "test": "bun test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
