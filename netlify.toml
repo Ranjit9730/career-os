@@ -7,15 +7,3 @@
   SESSION_ENCRYPTION_KEY = "CF3razVcskJdvsO32BMakNYrj23pffRV1a+1WEAXYV8="
   AI_ENCRYPTION_KEY = "/QJa2N2Gz4f42GXKJ+2nm2ztdpjNn2TG05GW/sHz+t4="
   SETUP_CODE = "XLRhLJtNe4oRib8QsuO2-Q"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
