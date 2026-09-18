@@ -1,13 +1,9 @@
 [build]
   command = "bun run build"
   publish = ".next"
-  functions = "netlify/functions"
 
-[context.production.environment]
-  DATABASE_URL = "postgresql://neondb_owner:npg_L1rAkfda5eJn@ep-flat-band-avqq8i76-pooler.c-11.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-  SESSION_ENCRYPTION_KEY = "CF3razVcskJdvsO32BMakNYrj23pffRV1a+1WEAXYV8="
-  AI_ENCRYPTION_KEY = "/QJa2N2Gz4f42GXKJ+2nm2ztdpjNn2TG05GW/sHz+t4="
-  SETUP_CODE = "XLRhLJtNe4oRib8QsuO2-Q"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [[headers]]
   for = "/*"
