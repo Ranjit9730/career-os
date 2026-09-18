@@ -3,7 +3,7 @@
 import "server-only"
 
 import { db } from "@/db/client"
-import { careerDna, careerEvidence, masterResumes, resumeVersions, jobs, applications, interviewSessions } from "@/db/schema"
+import { careerDna, careerEvidence, masterResumes, resumeVersions, jobs, applications, interviewSessions, careerProfiles } from "@/db/schema"
 import { eq, asc } from "drizzle-orm"
 
 export interface CareerDna {
@@ -330,4 +330,20 @@ export async function getApplications(userId: string) {
 
 export async function getInterviewSessions(userId: string) {
   return await db.select({ id: interviewSessions.id, sessionType: interviewSessions.sessionType, status: interviewSessions.status, startedAt: interviewSessions.startedAt }).from(interviewSessions).where(eq(interviewSessions.userId, userId))
+}
+
+// Step 1: Career Profile
+export async function getCareerProfile(userId: string) {
+  const [row] = await db.select({ id: careerProfiles.id, userId: careerProfiles.userId, fullName: careerProfiles.fullName, headline: careerProfiles.headline, location: careerProfiles.location, workMode: careerProfiles.workMode, salaryExpectations: careerProfiles.salaryExpectations, careerGoals: careerProfiles.careerGoals, preferredRoles: careerProfiles.preferredRoles, createdAt: careerProfiles.createdAt, updatedAt: careerProfiles.updatedAt }).from(careerProfiles).where(eq(careerProfiles.userId, userId)).limit(1)
+  return row ?? null
+}
+
+export async function createOrUpdateCareerProfile(userId: string, input: { fullName?: string, headline?: string, location?: string, workMode?: string, salaryExpectations?: Record<string, any>, careerGoals?: Record<string, any>, preferredRoles?: string[] }) {
+  const existing = await getCareerProfile(userId)
+  if (existing) {
+    const [row] = await db.update(careerProfiles).set({ ...input, updatedAt: new Date() }).where(eq(careerProfiles.userId, userId)).returning({ id: careerProfiles.id, userId: careerProfiles.userId, fullName: careerProfiles.fullName, headline: careerProfiles.headline, location: careerProfiles.location, workMode: careerProfiles.workMode, salaryExpectations: careerProfiles.salaryExpectations, careerGoals: careerProfiles.careerGoals, preferredRoles: careerProfiles.preferredRoles, createdAt: careerProfiles.createdAt, updatedAt: careerProfiles.updatedAt })
+    return row
+  }
+  const [row] = await db.insert(careerProfiles).values({ userId, fullName: input.fullName ?? "", headline: input.headline ?? "", location: input.location ?? "", workMode: input.workMode ?? "", salaryExpectations: input.salaryExpectations ?? {}, careerGoals: input.careerGoals ?? {}, preferredRoles: input.preferredRoles ?? [], createdAt: new Date(), updatedAt: new Date() }).returning({ id: careerProfiles.id, userId: careerProfiles.userId, fullName: careerProfiles.fullName, headline: careerProfiles.headline, location: careerProfiles.location, workMode: careerProfiles.workMode, salaryExpectations: careerProfiles.salaryExpectations, careerGoals: careerProfiles.careerGoals, preferredRoles: careerProfiles.preferredRoles, createdAt: careerProfiles.createdAt, updatedAt: careerProfiles.updatedAt })
+  return row
 }
