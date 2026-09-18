@@ -1,6 +1,7 @@
 [build]
-  command = "rm -f drizzle.config.ts eslint.config.mjs next-env.d.ts next.config.ts postcss.config.mjs tailwind.config.ts && bun run build"
+  command = "bun run build"
   publish = ".next"
+  functions = "netlify/functions"
 
 [context.production.environment]
   DATABASE_URL = "postgresql://neondb_owner:npg_L1rAkfda5eJn@ep-flat-band-avqq8i76-pooler.c-11.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
