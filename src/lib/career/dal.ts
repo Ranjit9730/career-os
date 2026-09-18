@@ -3,7 +3,7 @@
 import "server-only"
 
 import { db } from "@/db/client"
-import { careerDna, careerEvidence, masterResumes, resumeVersions, resumeSections, tailoredResumes, jobs, applications, interviewSessions, careerProfiles, skills, workExperience, projects, achievements, education, certifications, jobRoles, roleFamilies, relatedRoles, companies, jobSnapshots, jobMatches, jobScores, applicationEvents, interviewQuestions, interviewAnswers, interviewFeedback, networkContacts, networkRelationships, networkSequences, networkMessages, recruitmentAgencies, salaryResearch, aiUsage, aiCache } from "@/db/schema"
+import { careerDna, careerEvidence, masterResumes, resumeVersions, resumeSections, tailoredResumes, jobs, applications, interviewSessions, careerProfiles, skills, workExperience, projects, achievements, education, certifications, jobRoles, roleFamilies, relatedRoles, companies, jobSnapshots, jobMatches, jobScores, applicationEvents, interviewQuestions, interviewAnswers, interviewFeedback, networkContacts, networkRelationships, networkSequences, networkMessages, recruitmentAgencies, salaryResearch, aiUsage, aiCache, dailyActions, tasks, contentPillars, contentCalendar, linkedinContent, linkedinProfiles, opportunities, negotiations } from "@/db/schema"
 import { eq, asc } from "drizzle-orm"
 
 export interface CareerDna {
@@ -415,6 +415,16 @@ export async function getNetworkMessages(userId: string) {
   return await db.select({ id: networkMessages.id, userId: networkMessages.userId, contactId: networkMessages.contactId, sequenceId: networkMessages.sequenceId, stage: networkMessages.stage, message: networkMessages.message, status: networkMessages.status, createdAt: networkMessages.createdAt }).from(networkMessages).where(eq(networkMessages.userId, userId))
 }
 
+// Step 16: Opportunities
+export async function getOpportunities(userId: string) {
+  return await db.select({ id: opportunities.id, userId: opportunities.userId, jobId: opportunities.jobId, companyId: opportunities.companyId, applicationId: opportunities.applicationId, status: opportunities.status, nextAction: opportunities.nextAction, createdAt: opportunities.createdAt, updatedAt: opportunities.updatedAt }).from(opportunities).where(eq(opportunities.userId, userId))
+}
+
+// Step 17: Negotiations
+export async function getNegotiations(userId: string) {
+  return await db.select({ id: negotiations.id, userId: negotiations.userId, applicationId: negotiations.applicationId, marketContext: negotiations.marketContext, compensationComponents: negotiations.compensationComponents, counterofferStrategy: negotiations.counterofferStrategy, counterScript: negotiations.counterScript, pushbackSimulation: negotiations.pushbackSimulation, finalPlan: negotiations.finalPlan, status: negotiations.status, createdAt: negotiations.createdAt, updatedAt: negotiations.updatedAt }).from(negotiations).where(eq(negotiations.userId, userId))
+}
+
 // Step 11: Recruitment
 export async function getRecruitmentAgencies(userId: string) {
   return await db.select({ id: recruitmentAgencies.id, userId: recruitmentAgencies.userId, agency: recruitmentAgencies.agency, recruiter: recruitmentAgencies.recruiter, specialization: recruitmentAgencies.specialization, roles: recruitmentAgencies.roles, location: recruitmentAgencies.location, contact: recruitmentAgencies.contact, relationshipStatus: recruitmentAgencies.relationshipStatus, lastContact: recruitmentAgencies.lastContact, nextAction: recruitmentAgencies.nextAction, createdAt: recruitmentAgencies.createdAt }).from(recruitmentAgencies).where(eq(recruitmentAgencies.userId, userId))
@@ -463,9 +473,36 @@ export async function getSalaryResearch(userId: string) {
 
 // Step 13: AI Analytics
 export async function getAiUsage(userId: string) {
-  return await db.select({ id: aiUsage.id, userId: aiUsage.userId, provider: aiUsage.provider, model: aiUsage.model, requestCount: aiUsage.requestCount, tokenCount: aiUsage.tokenCount, costEstimate: aiUsage.costEstimate, recordedAt: aiUsage.recordedAt }).from(aiUsage).where(eq(aiUsage.userId, userId))
+  return await db.select({ id: aiUsage.id, userId: aiUsage.userId, providerId: aiUsage.providerId, providerKeyId: aiUsage.providerKeyId, taskType: aiUsage.taskType, model: aiUsage.model, freeOnly: aiUsage.freeOnly, status: aiUsage.status, latencyMs: aiUsage.latencyMs, tokensIn: aiUsage.tokensIn, tokensOut: aiUsage.tokensOut, estimatedCost: aiUsage.estimatedCost, errorCode: aiUsage.errorCode, requestId: aiUsage.requestId, createdAt: aiUsage.createdAt }).from(aiUsage).where(eq(aiUsage.userId, userId))
 }
 
 export async function getAiCache(userId: string) {
-  return await db.select({ id: aiCache.id, userId: aiCache.userId, key: aiCache.key, value: aiCache.value, expiresAt: aiCache.expiresAt, createdAt: aiCache.createdAt }).from(aiCache).where(eq(aiCache.userId, userId))
+  return await db.select({ id: aiCache.id, userId: aiCache.userId, cacheKey: aiCache.cacheKey, taskType: aiCache.taskType, inputHash: aiCache.inputHash, modelVersion: aiCache.modelVersion, promptVersion: aiCache.promptVersion, result: aiCache.result, expiresAt: aiCache.expiresAt, createdAt: aiCache.createdAt }).from(aiCache).where(eq(aiCache.userId, userId))
+}
+
+// Step 14: Task System
+export async function getDailyActions(userId: string) {
+  return await db.select({ id: dailyActions.id, userId: dailyActions.userId, priority: dailyActions.priority, deadline: dailyActions.deadline, reason: dailyActions.reason, relatedEntityType: dailyActions.relatedEntityType, relatedEntityId: dailyActions.relatedEntityId, recommendedAction: dailyActions.recommendedAction, status: dailyActions.status, createdAt: dailyActions.createdAt }).from(dailyActions).where(eq(dailyActions.userId, userId))
+}
+
+export async function getTasks(userId: string) {
+  return await db.select({ id: tasks.id, userId: tasks.userId, title: tasks.title, description: tasks.description, priority: tasks.priority, deadline: tasks.deadline, status: tasks.status, createdAt: tasks.createdAt }).from(tasks).where(eq(tasks.userId, userId))
+}
+
+// Step 15: Content System
+export async function getContentPillars(userId: string) {
+  return await db.select({ id: contentPillars.id, userId: contentPillars.userId, name: contentPillars.name, description: contentPillars.description, evidence: contentPillars.evidence, createdAt: contentPillars.createdAt }).from(contentPillars).where(eq(contentPillars.userId, userId))
+}
+
+export async function getContentCalendar(userId: string) {
+  return await db.select({ id: contentCalendar.id, userId: contentCalendar.userId, linkedinContentId: contentCalendar.linkedinContentId, scheduledFor: contentCalendar.scheduledFor, status: contentCalendar.status, engagement: contentCalendar.engagement, createdAt: contentCalendar.createdAt }).from(contentCalendar).where(eq(contentCalendar.userId, userId))
+}
+
+export async function getLinkedinContent(userId: string) {
+  return await db.select({ id: linkedinContent.id, userId: linkedinContent.userId, contentType: linkedinContent.contentType, text: linkedinContent.text, status: linkedinContent.status, publishedAt: linkedinContent.publishedAt, evidence: linkedinContent.evidence, createdAt: linkedinContent.createdAt }).from(linkedinContent).where(eq(linkedinContent.userId, userId))
+}
+
+export async function getLinkedinProfiles(userId: string) {
+  const [row] = await db.select({ id: linkedinProfiles.id, userId: linkedinProfiles.userId, headline: linkedinProfiles.headline, about: linkedinProfiles.about, experience: linkedinProfiles.experience, skills: linkedinProfiles.skills, targetRole: linkedinProfiles.targetRole, lastAuditAt: linkedinProfiles.lastAuditAt, createdAt: linkedinProfiles.createdAt, updatedAt: linkedinProfiles.updatedAt }).from(linkedinProfiles).where(eq(linkedinProfiles.userId, userId)).limit(1)
+  return row ?? null
 }
