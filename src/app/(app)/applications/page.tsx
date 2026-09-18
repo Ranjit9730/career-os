@@ -1,9 +1,21 @@
+"use client"
+import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 export default function ApplicationsPage() {
+  const [apps, setApps] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch("/api/applications").then(r => r.json()).then(data => {
+      setApps(Array.isArray(data) ? data : [])
+      setLoading(false)
+    })
+  }, [])
+
   return (
     <main className="p-8 max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
@@ -16,32 +28,32 @@ export default function ApplicationsPage() {
         </Button>
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left text-xs text-muted-foreground uppercase">
-            <tr>
-              <th className="px-4 py-3 font-medium">Position</th>
-              <th className="px-4 py-3 font-medium">Company</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Applied</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {[
-              { job: "AI Research Engineer", company: "DeepMind Labs", status: "Interview", date: "2 days ago" },
-              { job: "Senior Product Manager", company: "TechCorp", status: "Applied", date: "1 week ago" },
-              { job: "Engineering Lead", company: "Cloud Systems", status: "Offer", date: "Yesterday" },
-            ].map((app, i) => (
-              <tr key={i} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-medium">{app.job}</td>
-                <td className="px-4 py-3 text-muted-foreground">{app.company}</td>
-                <td className="px-4 py-3"><Badge variant={app.status === "Offer" ? "default" : "outline"}>{app.status}</Badge></td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">{app.date}</td>
+      {loading ? (
+        <div className="text-center py-12">Loading applications...</div>
+      ) : apps.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">No applications tracked yet.</div>
+      ) : (
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50 text-left text-xs text-muted-foreground uppercase">
+              <tr>
+                <th className="px-4 py-3 font-medium">Position</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Stage</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y">
+              {apps.map((app: any, i: number) => (
+                <tr key={app.id || i} className="hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium">App #{app.id?.slice(0, 8) || i + 1}</td>
+                  <td className="px-4 py-3"><Badge variant="outline">{app.status || "NEW"}</Badge></td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs">{app.interviewStage || "Not set"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </main>
   )
 }
