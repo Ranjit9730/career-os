@@ -344,8 +344,8 @@ export default function ProvidersPage() {
                           <form onSubmit={handleAddKey}>
                             <div className="space-y-4 py-4">
                               <div>
-                                <Label htmlFor="secret">API Key</Label>
-                                <Input name="secret" type="password" required />
+                                <Label htmlFor="secret">API Key / Secret Token (for AI provider)</Label>
+                                <Input name="secret" type="password" placeholder="sk-or-..." required />
                               </div>
                               <div>
                                 <Label htmlFor="status">Status</Label>
